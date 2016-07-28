@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>24VideoCalls</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/stylish-portfolio.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../dist/24s-api-v1.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <style>
+        #result {
+            background-color: white;
+            border-radius: 5px;
+            width: 60%;
+            margin: auto;
+            margin-top: 200px;
+            padding: 20px;
+            font-size: 18px;
+        }
+        #client_url {
+            width: 100%;
+        }
+        #startCall {
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header id="top" class="header">
+        <div class="text-vertical-center" id="start">
+            <h1>24VideoCalls</h1>
+            <h2 style="margin: 30px 0">Online advice is broken and we are here to fix it</h2>
+            <h3>Use our kick ass video calling technology to provide advice online. Yeah baby, for free!</h3>
+            <br>
+            <a id="startCall" class="btn btn-dark btn-lg">Start video call now</a>
+        </div>
+        <div id="result" class="hide">
+            <h3 style="margin-top:15px">Well done!</h3>
+            <p style="margin-top: 30px;">Send this link to your client:</p>
+            <p><input type="text" readonly id="client_url" onclick="select()"></p>
+            <p style="margin-top: 30px;">And click button bellow to join video call:</p>
+            <p><a href="" id="expert_url" target="_blank" class="btn btn-primary">Join video call</a></p>
+        </div>
+    </header>
+
+    <script>
+        $(function() {
+            $("#startCall").click(function() {
+                $('#startCall').prop('disabled', true);
+                $('#startCall').html('Starting...');
+                var api = new API24Sessions('https://demo.api.24sessions.com', 1, 'test_private_key', function() {
+                    api.getUserAPI().createExpert({}, function(expert) {
+                        api.getUserAPI().createClient({}, function(client) {
+                            var currentTimestamp = Math.round(new Date().getTime()/1000) + 60*15;
+                            api.getSessionAPI().createSession(client.id, expert.id, currentTimestamp, {components: {toolbar: false}}, function(session) {
+                                $('#result').removeClass('hide');
+                                $('#start').addClass('hide');
+                                $('#expert_url').attr('href', session.expert_session_room_url);
+                                $('#client_url').val(session.client_session_room_url);
+                            }, function(error) {
+                                alert('Sorry, something bad just happened: ' + error);
+                            })
+                        })
+                    });
+
+                });
+
+            });
+        })
+    </script>
+
+</body>
+
+</html>
