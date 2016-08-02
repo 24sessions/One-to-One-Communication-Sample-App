@@ -1,7 +1,7 @@
 var API24Sessions = function(apiDomain, appId, privateKey, readyCallback) {
-    const AUTH_URL = apiDomain + '/auth';
-    const USER_URL = apiDomain + '/user';
-    const SESSION_URL = apiDomain + '/session';
+    const AUTH_URL = apiDomain + '/v1/auth';
+    const USER_URL = apiDomain + '/v1/user';
+    const SESSION_URL = apiDomain + '/v1/session';
 
     var authAPI = new AuthAPI(AUTH_URL);
     var userAPI = new UserAPI(USER_URL);
@@ -28,7 +28,7 @@ var API24Sessions = function(apiDomain, appId, privateKey, readyCallback) {
 }
 var AuthAPI = function(authAPIUrl) {
     this.getToken = function(appId, privateKey, tokenCallback) {
-        Http.postJson(authAPIUrl, {api_id: appId, private_key: privateKey}, function(responseObject) {
+        Http.postJson(authAPIUrl, {app_id: appId, private_key: privateKey}, function(responseObject) {
             if (tokenCallback) {
                 tokenCallback(responseObject.token);
             }
